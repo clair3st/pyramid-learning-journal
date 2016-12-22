@@ -1,0 +1,20 @@
+{% extends "layout.jinja2" %}
+
+{% block body %}
+<div class="content">
+    {% if data %}
+    <h1>{{ data.title }}</h1>
+    {% endif %}
+    <form action="{{ request.route_url('create') }}" method="POST">
+        <label for="creation_date">Entry Date: </label><br/>
+        <input type="text" name="creation_date"/><br/>
+
+        <label for="title">New Entry Name: </label><br/>
+        <input type="text" name="title"/><br/>
+        
+        <label for="body">Text of article: </label><br/>
+        <textarea name="body" cols=100" rows="10"></textarea><br>
+        <input type="submit" value="Submit"/>
+    </form>
+</div>
+{% endblock body %}

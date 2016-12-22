@@ -1,0 +1,33 @@
+html {
+    background-color: #51657e
+}
+
+#container{
+    background-color: #abd591
+}
+
+nav {
+    float: right;
+    margin: 10px;
+    border: 10px;
+}
+
+ul {
+    list-style: none;
+    padding: 10;
+}
+
+li {
+    display: inline-block;
+    margin: 10;
+}
+
+
+article {
+    display: block;
+    background-color: #abd591;
+    min-height: 130px;
+    padding: 20px;
+    border: 5px solid;
+    border-radius: 3px;
+}
