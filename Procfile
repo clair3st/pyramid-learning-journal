@@ -1,1 +1,1 @@
-web: ./learning_journal/run
+web: ./run
