@@ -1,0 +1,1 @@
+web: ./learning_journal/run
