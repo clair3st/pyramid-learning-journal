@@ -3,7 +3,7 @@
     <article>
         {% for entry in entries %}
             <h5>{{ entry.creation_date }}</h5>
-            <a href="{{ request.route_url('detail')}}"><h4>{{ entry.title }}</h4></a>
+            <a href="{{ request.route_url('detail', id=entry.id) }}"><h4>{{ entry.title }}</h4></a>
             <P>{{ entry.body }}</P>
         {% endfor %}
     </article>

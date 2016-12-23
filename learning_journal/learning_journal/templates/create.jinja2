@@ -5,10 +5,7 @@
     {% if data %}
     <h1>{{ data.title }}</h1>
     {% endif %}
-    <form action="{{ request.route_url('create') }}" method="POST">
-        <label for="creation_date">Entry Date: </label><br/>
-        <input type="text" name="creation_date"/><br/>
-
+    <form action="" method="POST">
         <label for="title">New Entry Name: </label><br/>
         <input type="text" name="title"/><br/>
         
@@ -17,4 +14,4 @@
         <input type="submit" value="Submit"/>
     </form>
 </div>
-{% endblock body %}
+{% endblock %}

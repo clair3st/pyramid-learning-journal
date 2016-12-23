@@ -3,6 +3,7 @@ import transaction
 
 from pyramid import testing
 
+from .models import Entry, get_tm_session
 
 def dummy_request(dbsession):
     return testing.DummyRequest(dbsession=dbsession)
@@ -63,3 +64,6 @@ class TestMyViewFailureCondition(BaseTest):
         from .views.default import my_view
         info = my_view(dummy_request(self.session))
         self.assertEqual(info.status_int, 500)
+
+
+def test_added
