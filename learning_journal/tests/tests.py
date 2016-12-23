@@ -3,7 +3,7 @@ import transaction
 
 from pyramid import testing
 
-from .models import Entry, get_tm_session
+from learning_journal.models import Entry, get_tm_session
 
 def dummy_request(dbsession):
     return testing.DummyRequest(dbsession=dbsession)
@@ -46,7 +46,7 @@ class TestMyViewSuccessCondition(BaseTest):
         super(TestMyViewSuccessCondition, self).setUp()
         self.init_database()
 
-        from .models import MyModel
+        from learning_journal.models import MyModel
 
         model = MyModel(name='one', value=55)
         self.session.add(model)
@@ -65,5 +65,24 @@ class TestMyViewFailureCondition(BaseTest):
         info = my_view(dummy_request(self.session))
         self.assertEqual(info.status_int, 500)
 
+@pytest.fixture
+def testapp():
+    from webtest import TestApp
+    from learning_journal import main
 
-def test_added
+    app = main({}, **{"sqlalchemy.url": 'sqlite:///:memory:'})
+    testapp = TestApp(app)
+
+    SessionFactory = app.registry["dbsession_factory"]
+    engine = SessionFactory().bind
+    Base.metadata.create_all(bind=engine)
+
+    return testapp
+
+
+@pytest.fixture
+def fill_the_db(testapp):
+    SessionFactory = testapp.app.registry["dbsession_factory"]
+    with transaction.manager:
+        dbsession = get_tm_session(SessionFactory, transaction.manager)
+        dbsession.add_all(EXPENSES)

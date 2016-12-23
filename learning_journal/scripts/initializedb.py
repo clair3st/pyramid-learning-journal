@@ -53,6 +53,10 @@ def main(argv=sys.argv):
          "id": 3,
          "creation_date": "Dec 16, 2016",
          "body": "os.path to determine absolute path, listdir, mimetype detection, detect whether a file or a directory... I learned a lot in lab today on the http server project, despite the rabbit holes and complete refactoring needing to be done halfway through, and still way behind. It's tough with missing team members, who then come back and aren't as up to speed - especially when you're scrambling and under the gun to accomplish so much in a day, and not get even further behind. This weekend is gonna be a doozy. We also learned concurrency and asynchronous connections in class - I think we get to use that today."},
+        {"title": "A Day of Catch-Up",
+         "id": 4,
+         "creation_date": "Dec 22, 2016",
+         "body": "Got my learning journal to work, including how to pass the id to the detail page and edit page. Also, when the edit is submitted, it's saved and shown on the home page. Very cool. Also, with Ben's help, finally got Heroku to work for me. My requirements.txt was messed up, as was another file. Was able to give my crontab Lightnight Talk today. 5 mins is very short (and yes, Vi is a very weird editor). The class going over Pyramid again was extremely helpful. As was no data strcture work today. I know tomorrow will be hard, so I'm trying to get to sleep before midnight tonigh, woohoo."}
     ]
 
     with transaction.manager:
