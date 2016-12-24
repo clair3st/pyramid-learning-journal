@@ -11,23 +11,22 @@
     <!-- <link rel="stylesheet" href="{{ request.static_path('learning_journal:static/theme.css') }}"> -->
 </head>
 <body>
-    <header>
+  <div>
+    <div>
+      <header>
+        <h3 class="title">Colin's Learning Journal</h3>
         <nav>
-          <div class="container">
-            <div class="row">
-              <div class="one-half column" style="margin-top: 3%">
-                <ul>
-                  <li><a href="{{ request.route_url('create') }}">Create</a></li>
-                  <li><a href="{{ request.route_url('home') }}">Home</a></li>
-                </ul>
-              </div>
-            </div>
-          </div>
+          <ul>
+            <li><a href="{{ request.route_url('create') }}">Create</a></li>
+            <li><a href="{{ request.route_url('home') }}">Home</a></li>
+          </ul>
         </nav>
-    </header>
-    <aticle>    
+      </header>
+    </div>
+  </div>
+    <article>    
         {% block body %}
         {% endblock %}
-    </aticle>    
+    </article>    
 </body>
 </html>

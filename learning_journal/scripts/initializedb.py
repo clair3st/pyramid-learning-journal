@@ -56,7 +56,11 @@ def main(argv=sys.argv):
         {"title": "A Day of Catch-Up",
          "id": 4,
          "creation_date": "Dec 22, 2016",
-         "body": "Got my learning journal to work, including how to pass the id to the detail page and edit page. Also, when the edit is submitted, it's saved and shown on the home page. Very cool. Also, with Ben's help, finally got Heroku to work for me. My requirements.txt was messed up, as was another file. Was able to give my crontab Lightnight Talk today. 5 mins is very short (and yes, Vi is a very weird editor). The class going over Pyramid again was extremely helpful. As was no data strcture work today. I know tomorrow will be hard, so I'm trying to get to sleep before midnight tonigh, woohoo."}
+         "body": "Got my learning journal to work, including how to pass the id to the detail page and edit page. Also, when the edit is submitted, it's saved and shown on the home page. Very cool. Also, with Ben's help, finally got Heroku to work for me. My requirements.txt was messed up, as was another file. Was able to give my crontab Lightnight Talk today. 5 mins is very short (and yes, Vi is a very weird editor). The class going over Pyramid again was extremely helpful. As was no data strcture work today. I know tomorrow will be hard, so I'm trying to get to sleep before midnight tonigh, woohoo."},
+        {"title": "Directional Graph, PostgreSQL, and Tests.",
+         "id": 5,
+         "creation_date": "Dec 23, 2016",
+         "body": "Worked with Ted on the Directional Graph work. A ton of methods, but it was easier than some of the other data structures. It was fun to work with Ted all week on the data structures. He challenged me, mentored me, taught me a bunch more today, and was very thoughtful with any insights or issues. Doing tests on Step3 are hard to do, but got a db and html test to finally work. I also fixed my html/css on my learning journal site. There's only python people here at CF at 5:30pm on Dec 23rd. None of us are bothered or surprised. We're focused on tests. Happy holidays to all."}
     ]
 
     with transaction.manager:
