@@ -21,7 +21,7 @@ ENTRIES = [Entry(
 
 @pytest.fixture(scope="session")
 def configuration(request):
-    settings = {'sqlalchemy.url': 'sqlite:///:memory:'}
+    settings = {'sqlalchemy.url': 'postgres://colinlamont@localhost:5432/testing_db'}
     config = testing.setUp(settings=settings)
     config.include('learning_journal.models')
 
@@ -37,6 +37,7 @@ def dbsession(configuration, request):
     SessionFactory = configuration.registry['dbsession_factory']
     session = SessionFactory()
     engine = session.bind
+    Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
 
     def teardown():
@@ -46,17 +47,32 @@ def dbsession(configuration, request):
     return session
 
 
+@pytest.fixture
 def dummy_request(dbsession):
     return testing.DummyRequest(dbsession=dbsession)
 
+@pytest.fixture
+def add_models(dummy_request):
+    dummy_request.dbsession.add_all(ENTRIES)
 
 
 @pytest.fixture
 def testapp():
     from webtest import TestApp
-    from learning_journal import main
+    from pyramid.config import Configurator
 
-    app = main({}, **{"sqlalchemy.url": 'sqlite:///:memory:'})
+    def main(global_config, **settings):
+        """ The function returns a Pyramid WSGI application.
+        """
+        config = Configurator(settings=settings)
+        config.include('pyramid_jinja2')
+        config.include('.models')
+        config.include('.routes')
+        config.include('.security')
+        config.scan()
+        return config.make_wsgi_app()
+
+    app = main({}, **{"sqlalchemy.url": 'postgres://colinlamont@localhost:5432/testing_db'})
     testapp = TestApp(app)
 
     SessionFactory = app.registry["dbsession_factory"]
