@@ -52,7 +52,7 @@ def create_view(request):
     return {"data": {"title": "Make a new entry!"}}
 
 
-@view_config(route_name='login', renderer='../templates/login.jinja2')
+@view_config(route_name='login', renderer='../templates/login.jinja2', require_csrf=False) 
 def login(request):
     if request.method == 'POST':
         username = request.params.get('username', '')

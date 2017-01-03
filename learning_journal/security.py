@@ -5,7 +5,7 @@ from pyramid.authorization import ACLAuthorizationPolicy
 from pyramid.security import Allow, Everyone, Authenticated
 
 from passlib.apps import custom_app_context as pwd_context
-
+from pyramid.session import SignedCookieSessionFactory
 
 class NewRoot(object):
         def __init__(self, request):
@@ -37,3 +37,8 @@ def includeme(config):
     config.set_authentication_policy(authn_policy)
     config.set_authorization_policy(authz_policy)
     config.set_root_factory(NewRoot)
+    # Session stuff for CSRF Protection
+    session_secret = os.environ.get('SESSION_SECRET', 'itsaseekrit')
+    session_factory = SignedCookieSessionFactory(session_secret)
+    config.set_session_factory(session_factory)
+    config.set_default_csrf_options(require_csrf=True)

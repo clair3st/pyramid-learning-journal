@@ -3,6 +3,8 @@
 {% block body %}
 <div class="content">
         <form method="POST">
+        <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}" />
+
     
         <label for="title">New Entry Name: </label><br/>
         <input type="text" size=40 value="{{ data.title }}"name="title"/><br/>

@@ -6,6 +6,8 @@
     <h1>{{ data.title }}</h1>
     {% endif %}
     <form action="" method="POST">
+        <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}" />
+
         <label for="title">New Entry Name: </label><br/>
         <input type="text" name="title"/><br/>
         
