@@ -1,11 +1,11 @@
 from pyramid.response import Response
 from pyramid.view import view_config
 from pyramid.httpexceptions import HTTPFound
-
 from sqlalchemy.exc import DBAPIError
-
 from ..models import Entry
 import datetime
+from learning_journal.security import check_credentials
+from pyramid.security import remember, forget
 
 
 @view_config(route_name='home', renderer='../templates/list.jinja2')
@@ -25,7 +25,7 @@ def detail_view(request):
     return {'entry': entry}
 
 
-@view_config(route_name='edit', renderer='../templates/edit.jinja2')
+@view_config(route_name='edit', renderer='../templates/edit.jinja2', permission="add")
 def edit_view(request):
     the_id = int(request.matchdict["id"])
     entry = request.dbsession.query(Entry).get(the_id)
@@ -38,7 +38,7 @@ def edit_view(request):
     return {'data': entry}
 
 
-@view_config(route_name='create', renderer='../templates/create.jinja2')
+@view_config(route_name='create', renderer='../templates/create.jinja2', permission="add")
 def create_view(request):
     if request.method == "POST":
         new_title = request.POST["title"]
@@ -49,7 +49,24 @@ def create_view(request):
         request.dbsession.add(new_entry)
 
         return HTTPFound(location=request.route_url('home'))
-    return {"data": {"title": "We made a new entry!"}}
+    return {"data": {"title": "Make a new entry!"}}
+
+
+@view_config(route_name='login', renderer='../templates/login.jinja2')
+def login(request):
+    if request.method == 'POST':
+        username = request.params.get('username', '')
+        password = request.params.get('password', '')
+        if check_credentials(username, password):
+            headers = remember(request, username)
+            return HTTPFound(location=request.route_url('home'), headers=headers)
+    return {}
+
+
+@view_config(route_name="logout")
+def logout_view(request):
+    headers = forget(request)
+    return HTTPFound(request.route_url('home'), headers=headers)
 
 
 
