@@ -1,10 +1,48 @@
 {% extends "layout.jinja2" %}
 {% block body %}
-    <article>
+    <article id="thebody">
+        {% if request.authenticated_userid %}
+        <form action="" method="POST">
+            <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}" />
+
+            <label for="title">New Entry Name: </label><br/>
+            <input id="title" type="text" name="title"/><br/>
+            
+            <label for="body">Text of article: </label><br/>
+            <textarea id="entry" name="body" cols=30" rows="2"></textarea><br>
+            <button type="button" id="submit"> Submit</button>
+        </form>
+        {% endif %}
         {% for entry in entries %}
             <h5>{{ entry.creation_date }}</h5>
             <a href="{{ request.route_url('detail', id=entry.id) }}"><h4>{{ entry.title }}</h4></a>
-            <P>{{ entry.body }}</P>
+            <a href="https://twitter.com/share" class="twitter-share-button" data-text="{{ entry.title }}" data-show-count="false">Tweet</a><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+            <p>{{ entry.body }}</p>
         {% endfor %}
+        <p id="endbody"></p>
     </article>
+<script type="text/javascript">
+$(document).ready(function(){
+    var csrfToken = "{{request.session.get_csrf_token()}}";
+        var submit = $("#submit");
+        submit.on("click", function(){
+            $.ajax({
+                type: 'POST',
+                headers: { 'X-CSRF-Token': csrfToken },
+                url: 'create',
+                data: {"title": $('#title').val(), "body": $('#entry').val()},
+                success: function(){
+                    var temp_title = $('#title').val()
+                    var temp_body = $('#entry').val()
+                    $('#thebody').append('<h4>'+$('#title').val()+'</h4><br><p>'+$('#entry').val()+'</p>')
+                    $('#title').val("")
+                    $('#entry').val("")
+                }
+
+
+            })
+        })
+})
+</script>
 {% endblock %}
+
