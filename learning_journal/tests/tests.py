@@ -88,12 +88,24 @@ def fill_the_db(testapp):
         dbsession = get_tm_session(SessionFactory, transaction.manager)
         dbsession.add_all(Entry)
 
+@pytest.fixture
+def set_authentications_credentials():
+    """Create fake authentication username and pword for testing."""
+    import os
+    from passlib.apps import custom_app_context as pwd_context
+
+    os.environ["AUTH_USERNAME"] = "testname"
+    os.environ["AUTH_PASSWORD"] = pwd_context.hash("testpass")
+
 def test_home_route_has_an_title(testapp):
     """The home page has an title tag."""
     response = testapp.get('/', status=200)
     html = response.html
     assert html.find_all("title")
 
+def test_detail_route_has_no_information(testapp):
+    response = testapp.get("/journal/7", status=404)
+    assert response.status_code == 404
 
 # def test_home_route_with_data_has_filled_table(testapp, fill_the_db):
 #     """When there's data in the database, the home page has rows."""
@@ -108,8 +120,77 @@ def test_home_route_has_an_title(testapp):
 #     html = response.html
 #     assert len(html.find_all("tr")) == 1
 
-def test_db(dbsession):
+def test_new_entries_are_added_to_db(dbsession):
     """Testing this stuff."""
     dbsession.add_all(ENTRIES)
     query = dbsession.query(Entry).all()
     assert len(query) == len(ENTRIES)
+
+def test_home_route_with_entries_has_h5(testapp, fill_the_db):
+    """When there's data in the database, the home page has some rows."""
+    response = testapp.get('/', status=200)
+    html = response.html
+    assert len(html.find_all("h5")) == 10
+
+    def test_detail_route_has_some_information(testapp):
+    response = testapp.get("/journal/4")
+    assert "2017" in response.text
+
+# ======== TESTING WITH SECURITY ==========
+
+
+def test_create_route_is_forbidden(testapp):
+    """No login, no access to the create view."""
+    response = testapp.get("/create", status=403)
+    assert response.status_code == 403
+
+
+def test_app_can_log_in_and_be_authed(set_authentication_credentials, testapp):
+    """Test you can login to site."""
+    testapp.post("/login", params={
+        "username": "testname",
+        "password": "testpass"
+    })
+    assert "auth_tkt" in testapp.cookies
+
+
+def test_authenticated_user_can_see_create_route(testapp):
+    """Test if an authenticated user can get to the create view."""
+    response = testapp.get("/create")
+    assert response.status_code == 200
+
+
+def test_authenticated_user_can_create_new_post(testapp):
+    """Test a logged in user can create a new post."""
+    response = testapp.get("/create")
+    csrf_token = response.html.find(
+        "input", 
+        {"name": "csrf_token"}).attrs["value"]
+
+    testapp.post("/create", params={
+        "csrf_token": csrf_token,
+        "title": "New Title",
+        "body": "some tex",
+        "creation_date": "2017-01-06",
+    })
+
+    response = testapp.get("/")
+    assert "New Title" in response.text
+
+
+def test_logout_removes_authentication(testapp):
+    """Test that if you logout, you are no longer authenticated."""
+    testapp.get("/logout")
+    assert "auth_tkt" not in testapp.cookies
+
+
+def test_login_button_now_present_on_homepage(testapp):
+    """Test the login button is on home page if logged out."""
+    response = testapp.get("/")
+    assert "Login" in response.text
+
+
+def test_edit_view_is_forbidden_again(testapp):
+    """Test edit view is not allowed when logged out."""
+    response = testapp.get("/journal/7/edit", status=403)
+    assert response.status_code == 403
