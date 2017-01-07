@@ -5,6 +5,7 @@
     
         <h5>{{ entry.creation_date }}</h5>
         <h3>{{ entry.title }}</h3>
+        <a href="https://twitter.com/share" class="twitter-share-button" data-text="{{ entry.title }}" data-show-count="false">Tweet</a><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
         <p>{{ entry.body }}</p>
         {% if request.authenticated_userid %}
         <a href="{{ request.route_url('edit', id=entry.id) }}">Edit</a>

@@ -1,6 +1,6 @@
 {% extends "layout.jinja2" %}
 {% block body %}
-    <article id="thebody">
+    <article>
         {% if request.authenticated_userid %}
         <form action="" method="POST">
             <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}" />
@@ -9,17 +9,17 @@
             <input id="title" type="text" name="title"/><br/>
             
             <label for="body">Text of article: </label><br/>
-            <textarea id="entry" name="body" cols=30" rows="2"></textarea><br>
+            <textarea id="entry" name="body" cols=30" rows="1"></textarea><br>
             <button type="button" id="submit"> Submit</button>
         </form>
         {% endif %}
+        <p id="thebody"></p>
         {% for entry in entries %}
             <h5>{{ entry.creation_date }}</h5>
             <a href="{{ request.route_url('detail', id=entry.id) }}"><h4>{{ entry.title }}</h4></a>
-            <a href="https://twitter.com/share" class="twitter-share-button" data-text="{{ entry.title }}" data-show-count="false">Tweet</a><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+            
             <p>{{ entry.body }}</p>
-        {% endfor %}
-        <p id="endbody"></p>
+        {% endfor %} 
     </article>
 <script type="text/javascript">
 $(document).ready(function(){
@@ -32,9 +32,18 @@ $(document).ready(function(){
                 url: 'create',
                 data: {"title": $('#title').val(), "body": $('#entry').val()},
                 success: function(){
-                    var temp_title = $('#title').val()
-                    var temp_body = $('#entry').val()
-                    $('#thebody').append('<h4>'+$('#title').val()+'</h4><br><p>'+$('#entry').val()+'</p>')
+                    var creation = new Date()
+                    var year = creation.getFullYear()
+                    var month = creation.getMonth() + 1
+                    if (month.toString().length == 1) {
+                        month = "0" + month
+                    }
+                    var day = creation.getDate()
+                    if (day.toString().length == 1) {
+                        day = "0" + day
+                    }
+                    
+                    $('#thebody').prepend('<h5>'+year+'-'+month+'-'+day+'</h5><a href="/journal/"+{><h4>'+$('#title').val()+'</h4></a><p>'+$('#entry').val()+'</p>')
                     $('#title').val("")
                     $('#entry').val("")
                 }

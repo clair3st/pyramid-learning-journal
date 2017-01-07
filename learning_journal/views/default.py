@@ -14,7 +14,7 @@ def my_view(request):
         entries = request.dbsession.query(Entry).all()
     except DBAPIError:
         return Response(db_err_msg, content_type='text/plain', status=500)
-    return {'entries': entries}
+    return {'entries': entries[::-1]}
 
 
 @view_config(route_name='detail', renderer='../templates/detail.jinja2')

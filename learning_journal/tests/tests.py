@@ -1,3 +1,6 @@
+"""Testing for our learning journal."""
+
+
 import unittest
 import transaction
 import random
