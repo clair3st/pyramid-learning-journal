@@ -1,6 +1,7 @@
-import unittest
+"""Foo."""
+
+
 import transaction
-import random
 import datetime
 
 from pyramid import testing
@@ -18,9 +19,9 @@ ENTRIES = [Entry(
 ) for i in range(10)]
 
 
-
 @pytest.fixture(scope="session")
 def configuration(request):
+    """Foo."""
     settings = {'sqlalchemy.url': 'postgres://colinlamont@localhost:5432/testing_db'}
     config = testing.setUp(settings=settings)
     config.include('learning_journal.models')
@@ -32,8 +33,9 @@ def configuration(request):
     return config
 
 
-@pytest.fixture()
+@pytest.fixture(scope="session")
 def dbsession(configuration, request):
+    """Foo."""
     SessionFactory = configuration.registry['dbsession_factory']
     session = SessionFactory()
     engine = session.bind
@@ -49,21 +51,25 @@ def dbsession(configuration, request):
 
 @pytest.fixture
 def dummy_request(dbsession):
+    """Foo."""
     return testing.DummyRequest(dbsession=dbsession)
+
 
 @pytest.fixture
 def add_models(dummy_request):
+    """Foo."""
     dummy_request.dbsession.add_all(ENTRIES)
 
 
 @pytest.fixture
-def testapp():
+def testapp(request):
+    """Foo."""
     from webtest import TestApp
     from pyramid.config import Configurator
 
     def main(global_config, **settings):
-        """ The function returns a Pyramid WSGI application.
-        """
+        """The function returns a Pyramid WSGI application."""
+        settings = {'sqlalchemy.url': 'postgres://colinlamont@localhost:5432/testing_db'}
         config = Configurator(settings=settings)
         config.include('pyramid_jinja2')
         config.include('.models')
@@ -72,21 +78,29 @@ def testapp():
         config.scan()
         return config.make_wsgi_app()
 
-    app = main({}, **{"sqlalchemy.url": 'postgres://colinlamont@localhost:5432/testing_db'})
+    app = main({}, **{})
     testapp = TestApp(app)
 
     SessionFactory = app.registry["dbsession_factory"]
     engine = SessionFactory().bind
     Base.metadata.create_all(bind=engine)
+
+    def tear_down():
+        Base.metadata.drop_all(bind=engine)
+
+    request.addfinalizer(tear_down)
+
     return testapp
 
 
 @pytest.fixture
 def fill_the_db(testapp):
+    """Foo."""
     SessionFactory = testapp.app.registry["dbsession_factory"]
     with transaction.manager:
         dbsession = get_tm_session(SessionFactory, transaction.manager)
         dbsession.add_all(Entry)
+
 
 @pytest.fixture
 def set_authentications_credentials():
@@ -97,13 +111,16 @@ def set_authentications_credentials():
     os.environ["AUTH_USERNAME"] = "testname"
     os.environ["AUTH_PASSWORD"] = pwd_context.hash("testpass")
 
+
 def test_home_route_has_an_title(testapp):
     """The home page has an title tag."""
     response = testapp.get('/', status=200)
     html = response.html
     assert html.find_all("title")
 
+
 def test_detail_route_has_no_information(testapp):
+    """Foo."""
     response = testapp.get("/journal/7", status=404)
     assert response.status_code == 404
 
@@ -126,13 +143,16 @@ def test_new_entries_are_added_to_db(dbsession):
     query = dbsession.query(Entry).all()
     assert len(query) == len(ENTRIES)
 
+
 def test_home_route_with_entries_has_h5(testapp, fill_the_db):
     """When there's data in the database, the home page has some rows."""
     response = testapp.get('/', status=200)
     html = response.html
     assert len(html.find_all("h5")) == 10
 
-    def test_detail_route_has_some_information(testapp):
+
+def test_detail_route_has_some_information(testapp):
+    """Foo."""
     response = testapp.get("/journal/4")
     assert "2017" in response.text
 
@@ -164,7 +184,7 @@ def test_authenticated_user_can_create_new_post(testapp):
     """Test a logged in user can create a new post."""
     response = testapp.get("/create")
     csrf_token = response.html.find(
-        "input", 
+        "input",
         {"name": "csrf_token"}).attrs["value"]
 
     testapp.post("/create", params={
