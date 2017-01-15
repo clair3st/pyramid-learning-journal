@@ -42,8 +42,9 @@ $(document).ready(function(){
                     if (day.toString().length == 1) {
                         day = "0" + day
                     }
-                    
-                    $('#thebody').prepend('<h5>'+year+'-'+month+'-'+day+'</h5><a href="/journal/"+{><h4>'+$('#title').val()+'</h4></a><p>'+$('#entry').val()+'</p>')
+                    new_id = Number($('a:eq(3)').attr("href").split("/")[4]) + 1;
+                    console.log(new_id);
+                    $('#thebody').prepend('<h5>'+year+'-'+month+'-'+day+'</h5><a href="/journal/'+new_id+'"</h5><h4>'+$('#title').val()+'</h4></a><p>'+$('#entry').val()+'</p>')
                     $('#title').val("")
                     $('#entry').val("")
                 }
