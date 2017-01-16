@@ -13,7 +13,7 @@ fake = faker.Faker()
 
 ENTRIES = [Entry(
     title=fake.catch_phrase(),
-    creation_date=datetime.datetime.now(),
+    creation_date="Jan 12 2017",
     body=fake.text(100),
 ) for i in range(10)]
 
@@ -95,7 +95,6 @@ def testapp(request):
 
 @pytest.fixture
 def fill_the_db(testapp):
-    import pdb; pdb.set_trace()
     """Filling the test db."""
     SessionFactory = testapp.app.registry["dbsession_factory"]
     with transaction.manager:
