@@ -27,6 +27,7 @@ def detail_view(request):
 
 @view_config(route_name='edit', renderer='../templates/edit.jinja2', permission="add")
 def edit_view(request):
+    """The edit post view."""
     the_id = int(request.matchdict["id"])
     entry = request.dbsession.query(Entry).get(the_id)
     if request.method == "POST":
@@ -40,6 +41,7 @@ def edit_view(request):
 
 @view_config(route_name='create', renderer='../templates/create.jinja2', permission="add")
 def create_view(request):
+    """The create post view."""
     if request.method == "POST":
         new_title = request.POST["title"]
         new_body = request.POST["body"]
@@ -54,6 +56,7 @@ def create_view(request):
 
 @view_config(route_name='login', renderer='../templates/login.jinja2', require_csrf=False) 
 def login(request):
+    """The login view."""
     if request.method == 'POST':
         username = request.params.get('username', '')
         password = request.params.get('password', '')
@@ -65,8 +68,17 @@ def login(request):
 
 @view_config(route_name="logout")
 def logout_view(request):
+    """The logout view."""
     headers = forget(request)
     return HTTPFound(request.route_url('home'), headers=headers)
+
+
+@view_config(route_name="api_list", renderer="json")
+def api_list_view(request):
+    """The conversion to JSON view."""
+    entries = request.dbsession.query(Entry).all()
+    output = [item.to_json() for item in entries]
+    return output
 
 
 db_err_msg = """\
