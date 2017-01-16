@@ -1,9 +1,8 @@
-"""Foo."""
+"""Testing for our learning journal."""
 
 
 import transaction
 import datetime
-
 from pyramid import testing
 import pytest
 from learning_journal.models import Entry, get_tm_session
@@ -21,7 +20,7 @@ ENTRIES = [Entry(
 
 @pytest.fixture(scope="session")
 def configuration(request):
-    """Foo."""
+    """Fixture of Configuration and setup of testing db."""
     settings = {'sqlalchemy.url': 'postgres://colinlamont@localhost:5432/testing_db'}
     config = testing.setUp(settings=settings)
     config.include('learning_journal.models')
@@ -35,7 +34,7 @@ def configuration(request):
 
 @pytest.fixture(scope="session")
 def dbsession(configuration, request):
-    """Foo."""
+    """A session of a test database."""
     SessionFactory = configuration.registry['dbsession_factory']
     session = SessionFactory()
     engine = session.bind
@@ -51,19 +50,19 @@ def dbsession(configuration, request):
 
 @pytest.fixture
 def dummy_request(dbsession):
-    """Foo."""
+    """A dummy session."""
     return testing.DummyRequest(dbsession=dbsession)
 
 
 @pytest.fixture
 def add_models(dummy_request):
-    """Foo."""
+    """Adding the faker data to the testing database."""
     dummy_request.dbsession.add_all(ENTRIES)
 
 
 @pytest.fixture
 def testapp(request):
-    """Foo."""
+    """The test app of our learning journal."""
     from webtest import TestApp
     from pyramid.config import Configurator
 
@@ -83,6 +82,7 @@ def testapp(request):
 
     SessionFactory = app.registry["dbsession_factory"]
     engine = SessionFactory().bind
+
     Base.metadata.create_all(bind=engine)
 
     def tear_down():
@@ -95,11 +95,12 @@ def testapp(request):
 
 @pytest.fixture
 def fill_the_db(testapp):
-    """Foo."""
+    import pdb; pdb.set_trace()
+    """Filling the test db."""
     SessionFactory = testapp.app.registry["dbsession_factory"]
     with transaction.manager:
         dbsession = get_tm_session(SessionFactory, transaction.manager)
-        dbsession.add_all(Entry)
+        dbsession.add_all(ENTRIES)
 
 
 @pytest.fixture
@@ -120,7 +121,7 @@ def test_home_route_has_an_title(testapp):
 
 
 def test_detail_route_has_no_information(testapp):
-    """Foo."""
+    """No infomation when not logged in."""
     response = testapp.get("/journal/7", status=404)
     assert response.status_code == 404
 
@@ -138,14 +139,14 @@ def test_detail_route_has_no_information(testapp):
 #     assert len(html.find_all("tr")) == 1
 
 def test_new_entries_are_added_to_db(dbsession):
-    """Testing this stuff."""
+    """Testing this ."""
     dbsession.add_all(ENTRIES)
     query = dbsession.query(Entry).all()
     assert len(query) == len(ENTRIES)
 
 
 def test_home_route_with_entries_has_h5(testapp, fill_the_db):
-    """When there's data in the database, the home page has some rows."""
+    """When there's data in the database, the home page has some H5 tags."""
     response = testapp.get('/', status=200)
     html = response.html
     assert len(html.find_all("h5")) == 10
@@ -190,7 +191,7 @@ def test_authenticated_user_can_create_new_post(testapp):
     testapp.post("/create", params={
         "csrf_token": csrf_token,
         "title": "New Title",
-        "body": "some tex",
+        "body": "some text",
         "creation_date": "2017-01-06",
     })
 
