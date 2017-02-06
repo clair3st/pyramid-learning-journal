@@ -1,0 +1,13 @@
+{% extends "layout.jinja2" %}
+
+{% block body %}
+<div class="content">
+    
+        <h5>{{ entry.creation_date }}</h5>
+        <h3>{{ entry.title }}</h3>
+        <p>{{ entry.body }}</p>
+        {% if request.authenticated_userid %}
+        <a href="{{ request.route_url('edit', id=entry.id) }}">Edit</a>
+        {% endif %}
+</div>
+{% endblock %}
